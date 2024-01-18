@@ -8,9 +8,11 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 import sg.edu.nus.iss.day27lecture.model.Person;
 
@@ -60,5 +62,23 @@ public class PersonRepo {
 
     public void deletePerson(Person p) {
         mongoTemplate.remove(p);
+    }
+
+    public Person updatePerson(Person p) {
+        Person updPerson = mongoTemplate.save(p);
+        return updPerson;
+    }
+
+    // day 27 - slide 11 (skipped slide 9)
+    public void findAndUpdatePerson(Long id, Person person) {
+        Query query = Query.query(Criteria.where("_id").is(id));
+
+        Update updateOperation = new Update()
+        .set("name", person.getName())
+        .inc("age", 1);
+
+        UpdateResult result = mongoTemplate.updateMulti(query, updateOperation, "persons");
+
+        System.out.printf("Documents updated: %d\n", result.getModifiedCount());
     }
 }
