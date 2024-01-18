@@ -9,13 +9,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Person {
     
     @Id
-    private Long personId;
+    private String personId;
     private String name;
     private long age;
     private String gender;
     private List<String> hobbies;
 
-    public Person(Long personId, String name, long age, String gender, List<String> hobbies) {
+    public Person() {
+
+    }
+    
+    public Person(String personId, String name, long age, String gender, List<String> hobbies) {
         this.personId = personId;
         this.name = name;
         this.age = age;
@@ -23,11 +27,18 @@ public class Person {
         this.hobbies = hobbies;
     }
 
-    public Long getPersonId() {
+    public Person(String name, long age, String gender, List<String> hobbies) {
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.hobbies = hobbies;
+    }
+
+    public String getPersonId() {
         return personId;
     }
 
-    public void setPersonId(Long personId) {
+    public void setPersonId(String personId) {
         this.personId = personId;
     }
 
@@ -63,7 +74,10 @@ public class Person {
         this.hobbies = hobbies;
     }
 
-    
-    
+    @Override
+    public String toString() {
+        return "Person [personId=" + personId + ", name=" + name + ", age=" + age + ", gender=" + gender + ", hobbies="
+                + hobbies + "]";
+    }
     
 }

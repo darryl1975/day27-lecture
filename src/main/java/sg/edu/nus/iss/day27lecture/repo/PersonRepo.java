@@ -70,7 +70,7 @@ public class PersonRepo {
     }
 
     // day 27 - slide 11 (skipped slide 9)
-    public void findAndUpdatePerson(Long id, Person person) {
+    public void findAndUpdatePerson(ObjectId id, Person person) {
         Query query = Query.query(Criteria.where("_id").is(id));
 
         Update updateOperation = new Update()
