@@ -9,13 +9,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Person {
     
     @Id
-    private String personId;
+    private Long personId;
     private String name;
     private long age;
     private String gender;
     private List<String> hobbies;
 
-    public Person(String personId, String name, long age, String gender, List<String> hobbies) {
+    public Person(Long personId, String name, long age, String gender, List<String> hobbies) {
         this.personId = personId;
         this.name = name;
         this.age = age;
@@ -23,11 +23,11 @@ public class Person {
         this.hobbies = hobbies;
     }
 
-    public String getPersonId() {
+    public Long getPersonId() {
         return personId;
     }
 
-    public void setPersonId(String personId) {
+    public void setPersonId(Long personId) {
         this.personId = personId;
     }
 
