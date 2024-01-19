@@ -9,11 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
@@ -41,12 +45,12 @@ public class Day27LectureApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		// Person createdPerson01 = personRepo.insertPerson(new Person("Darryl", 15, "M", Arrays.asList("RC", "Swimmming", "Cycling")));
-		// Person createdPerson02 = personRepo.savePerson(new Person("Emily", 18, "F", Arrays.asList("Cycling", "Reading", "Shopping")));
-		// Person createdPerson03 = personRepo.insertPerson(new Person("James", 25, "M", Arrays.asList("RC", "Swimmming", "Cycling")));
-		// Person createdPerson04 = personRepo.savePerson(new Person("Camelia", 28, "F", Arrays.asList("Cycling", "Reading", "Shopping")));
-		// Person createdPerson05 = personRepo.insertPerson(new Person("Ashley", 35, "F", Arrays.asList("RC", "Swimmming", "Cycling")));
-		// Person createdPerson06 = personRepo.savePerson(new Person("Kristal", 88, "F", Arrays.asList("Cycling", "Reading", "Shopping")));
+		Person createdPerson01 = personRepo.insertPerson(new Person("Darryl", 15, "M", Arrays.asList("RC", "Swimmming", "Cycling")));
+		Person createdPerson02 = personRepo.savePerson(new Person("Emily", 18, "F", Arrays.asList("Cycling", "Reading", "Shopping")));
+		Person createdPerson03 = personRepo.insertPerson(new Person("James", 25, "M", Arrays.asList("RC", "Swimmming", "Cycling")));
+		Person createdPerson04 = personRepo.savePerson(new Person("Camelia", 28, "F", Arrays.asList("Cycling", "Reading", "Shopping")));
+		Person createdPerson05 = personRepo.insertPerson(new Person("Ashley", 35, "F", Arrays.asList("RC", "Swimmming", "Cycling")));
+		Person createdPerson06 = personRepo.savePerson(new Person("Kristal", 88, "F", Arrays.asList("Cycling", "Reading", "Shopping")));
 
 		// System.out.println("Created Person 02:" + createdPerson02.toString());
 
@@ -110,17 +114,59 @@ public class Day27LectureApplication implements CommandLineRunner {
 
 
 		// day 28 - slide 11
-		MatchOperation matchOperation2 = Aggregation.match(Criteria.where("Year").is("2009"));
+		// MatchOperation matchOperation2 = Aggregation.match(Criteria.where("Year").is("2009"));
 
-		ProjectionOperation projectionOperation = Aggregation.project("Title", "Year", "Rated", "Released").andExclude("_id");
+		// ProjectionOperation projectionOperation = Aggregation.project("Title", "Year", "Rated", "Released").andExclude("_id");
 
-		Aggregation pipeline2 = Aggregation.newAggregation(matchOperation2, projectionOperation);
+		// Aggregation pipeline2 = Aggregation.newAggregation(matchOperation2, projectionOperation);
 
+		// AggregationResults<Document> results2 = mt.aggregate(pipeline2, "movies", Document.class);
+
+		// List<Document> docs2 = results2.getMappedResults();
+
+		// System.out.println("Day 28 - slide 10: " + docs2.toString());
+
+		// day 28 - slide 15
+		GroupOperation groupOperation = Aggregation.group("Rated")
+		.push("Title").as("titles")
+		.count().as("count");
+
+		SortOperation sortOperation = Aggregation.sort(Sort.by(Direction.ASC, "count"));
+
+		Aggregation pipeline = Aggregation.newAggregation(groupOperation, sortOperation);
+
+		AggregationResults<Document> results = mt.aggregate(pipeline, "movies", Document.class);
+
+		List<Document> docs = results.getMappedResults();
+		System.out.println("Day 28 - slide 15 " + docs.toString());
+
+		// day 28 - slide 17
+		// db.movies.aggregate([
+		// {
+		// $project: { (1)
+		// 	_id: 1, Title: 1, summary: "$Type"
+		// } 
+		// },
+		// { (2)
+		// 	$sort : { Title: 1, summary: -1}
+		// }
+		// ]);
+		// day 28 - slide 18
+		// (1)
+		ProjectionOperation projectionOperation = Aggregation.project("_id", "Title").and("Type").as("summary");
+
+		// (2)
+		SortOperation sortOperation2 = Aggregation.sort(Sort.by(Direction.ASC, "Title"));
+
+		// Step 3
+		Aggregation pipeline2 = Aggregation.newAggregation(projectionOperation, sortOperation2);
+
+		// Step - execute pipeline using MongoTemplate
 		AggregationResults<Document> results2 = mt.aggregate(pipeline2, "movies", Document.class);
 
 		List<Document> docs2 = results2.getMappedResults();
+		System.out.println("Day 28 - slide 18 " + docs2.toString());
 
-		System.out.println("Day 28 - slide 10: " + docs2.toString());
-
+		
 	}
 }
