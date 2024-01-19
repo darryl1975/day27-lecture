@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.BucketOperation;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
@@ -239,29 +240,39 @@ public class Day27LectureApplication implements CommandLineRunner {
 
 		// day 28 - slide 29
 		// db.movies.aggregate([
-		// 	{
-		// 		$bucket: {
-		// 			groupBy: "$Rated",
-		// 			boundaries: ["N/A", "PG", "R", "TV"],
-		// 			default: "TV"
-		// 		}
-		// 	}
+		// {
+		// $bucket: {
+		// groupBy: "$Rated",
+		// boundaries: ["N/A", "PG", "R", "TV"],
+		// default: "TV"
+		// }
+		// }
 		// ]);
 		// day 28 - slide 31
 
 		// day 28 - slide 34
-		BucketOperation bucketOperation = Aggregation.bucket("Rated")
-				.withBoundaries("N/A", "PG", "R", "TV")
-				.withDefaultBucket("TV")
-				.andOutputCount().as("count")
-				.andOutput("Title").push().as("titles");
+		// BucketOperation bucketOperation = Aggregation.bucket("Rated")
+		// .withBoundaries("N/A", "PG", "R", "TV")
+		// .withDefaultBucket("TV")
+		// .andOutputCount().as("count")
+		// .andOutput("Title").push().as("titles");
 
-		Aggregation pipeline = Aggregation.newAggregation(bucketOperation);
+		// Aggregation pipeline = Aggregation.newAggregation(bucketOperation);
+
+		// AggregationResults<Document> results = mt.aggregate(pipeline, "movies",
+		// Document.class);
+
+		// List<Document> docs = results.getMappedResults();
+		// System.out.println("Day 28 - slide 34 " + docs.toString());
+
+		// day 28 - slide 39
+		LookupOperation lookupOperation = Aggregation.lookup("reviews", "_id", "movie_id", "reviews");
+
+		Aggregation pipeline = Aggregation.newAggregation(lookupOperation);
 
 		AggregationResults<Document> results = mt.aggregate(pipeline, "movies", Document.class);
 
 		List<Document> docs = results.getMappedResults();
 		System.out.println("Day 28 - slide 34 " + docs.toString());
-
 	}
 }
